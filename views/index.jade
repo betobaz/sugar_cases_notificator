@@ -1,0 +1,66 @@
+extends layout
+
+block mainContent
+	header
+		.container
+			.row
+				.three.columns
+					h1 This is home
+				.nine.columns				
+					nav.top-bar
+						ul
+							li
+								a(href="#") Home
+							li
+								a(href="#") Sockets
+	.container
+		.row
+			.twelve.colums
+				dl.tabs
+					dd.active
+						a(href="#simple1") Simple Tab 1
+					dd
+						a(href="#simple2") Simple Tab 2
+					dd
+						a(href="#simple3") Simple Tab 3
+				ul.tabs-content
+					li.active#simple1Tab 
+						p En el servidor se acumulan 3 mensajes generados por cualquier cliente y envian a todos los clientes
+						form							
+							textarea#my-messages(style="height:300px;")
+							input#message(type="text", placeholder="mensaje").six
+							button#enviar.button Enviar
+					li#simple2Tab This is simple tab2
+					li#simple3Tab This is simple tab3
+
+
+			= content
+	script(type='text/javascript')(src='/socket.io/socket.io.js')
+	script(type='text/javascript')(src='/javascripts/jquery.js')
+	script(type='text/javascript')(src='/javascripts/foundation.min.js')
+	script(type='text/javascript')
+		$(function(){
+			var messageInput = $('#message'),
+				myMessageTextArea = $('#my-messages'),
+				socket = io.connect("http://192.168.10.185:3000"),
+				messages = "";
+			socket.on('news', function(data){
+				if(data.myMessages && data.myMessages.length){
+					$.map(data.myMessages, function(element, index){
+						messages += element + "\n";
+					});		
+					myMessageTextArea.text(messages)			
+				}
+				//socket.emit('my other event', {my: 'data'});
+			});			
+
+			$(document).foundationTabs();
+
+			$('#enviar').on('click', function(e){
+				e.preventDefault();
+				console.log(messageInput.val());
+				socket.emit('my other event', {message: messageInput.val()});
+				messageInput.val("");
+			});
+		});
+		
