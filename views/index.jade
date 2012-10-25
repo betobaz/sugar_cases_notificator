@@ -44,10 +44,10 @@ block mainContent
 				myMessageTextArea = $('#my-messages'),
 				socket = io.connect("http://192.168.10.185:3000"),
 				messages = "";
-			socket.on('news', function(data){
-				if(data.myMessages && data.myMessages.length){
-					$.map(data.myMessages, function(element, index){
-						messages += element + "\n";
+			socket.on('nuevas_notificaciones', function(data){
+				if(data.notificaciones && data.notificaciones.length){
+					$.map(data.notificaciones, function(element, index){
+						messages += element.message + "\n";
 					});		
 					myMessageTextArea.text(messages)			
 				}

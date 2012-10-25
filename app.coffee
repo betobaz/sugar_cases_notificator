@@ -2,7 +2,12 @@ express = require('express')
 app = express()
 server = require('http').createServer(app)
 io = require('socket.io').listen(server)
+mongoose = require('mongoose')
 
+
+mongoose.connect('mongodb://localhost/casos')
+
+app.use require('connect').bodyParser()
 app.set 'views', __dirname + '/views'
 app.set 'view engine', 'jade'
 app.set 'view options', 
@@ -17,18 +22,14 @@ app.get '/', (req, res) ->
 	res.render 'index', 
 		title: 'Betobaz socket io'
 		content: "Contenido de betobaz"
-	
+
+
+
 messageBuffer = []
-io.sockets.on 'connection', (socket) ->
-	socket.emit 'news', {myMessages:['world']}
-	socket.on 'my other event', (data)->
-		if data.message
-			messageBuffer.push data.message
-		if messageBuffer.length == 3
-			console.log messageBuffer
-			io.sockets.emit 'news', {myMessages: messageBuffer}
-			messageBuffer = []
-		console.log data
+
+websockets = require('./websockets')(io, mongoose)
+
+api = require('./api')(app, mongoose, io)
 
 console.log 'Server started'
 
